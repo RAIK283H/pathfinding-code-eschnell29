@@ -70,9 +70,8 @@ class Scoreboard:
         for index, (display_element, player) in enumerate(self.player_path_display):
             display_element.x = config_data.window_width - self.stat_width
             display_element.y = config_data.window_height - self.base_height_offset - self.stat_height * 5 - self.stat_height * (index * self.number_of_stats)
-       #change
         
-#potential change
+
     def update_paths(self):
         for index in range(len(config_data.player_data)):
             self.player_path_display[index][0].text = self.wrap_text(str(global_game_data.graph_paths[index]))

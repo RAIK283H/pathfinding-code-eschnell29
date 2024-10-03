@@ -32,14 +32,14 @@ def get_random_path():
     while current_node != target_node:
         num_nodes_visited = num_nodes_visited + 1
         neighbors = graph[current_node][1]
-        next_node = random.choice(neighbors)
+        next_node = int(random.choice(neighbors))
         rand_path.append(next_node)
         current_node = next_node
 
     while current_node != end_node:
         num_nodes_visited = num_nodes_visited + 1
         neighbors = graph[current_node][1]
-        next_node = random.choice(neighbors)
+        next_node = int(random.choice(neighbors))
         rand_path.append(next_node)
         current_node = next_node
 
