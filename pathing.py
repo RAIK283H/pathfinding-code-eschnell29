@@ -21,7 +21,7 @@ def get_random_path():
     assert len(graph_data.graph_data[global_game_data.current_graph_index]) > 0
     
     num_nodes_visited = 0
-    target_node = global_game_data.target_node[1]
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
     start_node = 0
     graph = graph_data.graph_data[global_game_data.current_graph_index]
     end_node = len(graph)-1
@@ -49,7 +49,7 @@ def get_random_path():
     assert rand_path[len(rand_path) -1] == end_node
     assert target_node in rand_path
     
-    return rand_path, num_nodes_visited
+    return rand_path
     
 
 

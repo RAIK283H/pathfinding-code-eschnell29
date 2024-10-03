@@ -45,7 +45,6 @@ class Player:
             if self.current_objective >= len(global_game_data.graph_paths[self.player_index]):
                 self.current_objective = 0
                 global_game_data.current_player_index = global_game_data.current_player_index + 1
-
         # Move player under normal circumstances
         if self.current_objective >= 0 and global_game_data.current_player_index == self.player_index:
             target_x = graph_data.graph_data[global_game_data.current_graph_index][
