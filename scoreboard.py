@@ -62,6 +62,14 @@ class Scoreboard:
                                                          color=player[2][colors.TEXT_INDEX])
             self.player_nodes_visited_display.append((num_nodes_label, player))
             
+            self.winner_label = pyglet.text.Label('',
+                                      x=900,
+                                      y=60,
+                                      font_name='Arial',
+                                      font_size=self.font_size,
+                                      batch=batch,
+                                      group=group)
+            
 
     def update_elements_locations(self):
         self.distance_to_exit_label.x = config_data.window_width - self.stat_width
@@ -116,10 +124,26 @@ class Scoreboard:
             path_length = len(rand_path)
             display_element.text = "Number of Nodes visited: " + str(path_length)
 
+    #loop through player_objects and get distance traveled to find the player with least distance
+    #make this appear on screen
+    def find_winner(self):
+        winner_num = float('inf')
+        winner = None
+        for player_object in global_game_data.player_objects:
+            distance_traveled = player_object.distance_traveled
+            if distance_traveled == 0:
+                continue
+            if distance_traveled < winner_num:
+                winner_num = player_object.distance_traveled
+                winner = player_object
+        if winner:
+            self.winner_label.text = f"The winning player was {winner.player_config_data[0]} with distance {winner_num:.0f}"
+
     def update_scoreboard(self):
         self.update_elements_locations()
         self.update_paths()
         self.update_distance_to_exit()
         self.update_distance_traveled()
         self.num_nodes()
-
+        self.find_winner()
+    
