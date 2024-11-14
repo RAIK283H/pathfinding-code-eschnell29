@@ -4,6 +4,7 @@ from pathing import dfs_path, bfs_path
 from permutation import is_ham_cycle
 from permutation import get_all_sjt_permutations
 from permutation import find_all_hamiltonian_cycles
+from pathing import dijkstra_path
 
 class TestPathFinding(unittest.TestCase):
 
@@ -96,5 +97,36 @@ class TestPathFinding(unittest.TestCase):
         result = get_all_sjt_permutations(4)
         self.assertEqual(len(result), expected_response_length)
 
+    def test_correct_dijkstra_path(self):
+        result = dijkstra_path(0, 2, self.hamGraph1)
+        self.assertEqual(result, [0,1,2], "Dijkstra should return correct path from 0 to 2")
+    
+    def test_correct_dijkstra_path_2(self):
+        result = dijkstra_path(1, 2, self.hamGraph1)
+        self.assertEqual(result, [1,2], "Dijkstra should return correct path from 1 to 2")
+
+    def test_no_path_dijkstra(self):
+        result = dijkstra_path(1,3,self.hamGraph1)
+        self.assertEqual(result, [], "Dijkstra should return empty cause no path")
+    
+    def test_disconnected_path_dijkstra(self):
+        result = dijkstra_path(0, 3, self.noHamGraph)
+        self.assertEqual(result, [], "Dijkstra returns empty path because disconnected nodes")
+    
+    def test_dijkstra_path_edge_case(self):
+        graph = {0: [(0, 0), []]} 
+        result = dijkstra_path(0, 0, graph) 
+        self.assertEqual(result, [0], "Dijkstra return path containing only start node")
+
+    def test_dijkstra_path_multiple_paths(self):
+        graph = {
+            0: [(0, 0), [1, 2]],
+            1: [(1, 0), [0, 3]],
+            2: [(0, 1), [0, 3]],
+            3: [(1, 1), [1, 2]],
+        }
+        result = dijkstra_path(0, 3, graph)
+        self.assertEqual(result, [0, 1, 3], "Dijkstra should return the shortest path from 0 to 3")
+    
 if __name__ == '__main__':
     unittest.main()

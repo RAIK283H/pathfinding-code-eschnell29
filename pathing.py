@@ -2,6 +2,7 @@ import graph_data
 import global_game_data
 from numpy import random
 from collections import deque
+import heapq
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
@@ -137,4 +138,55 @@ def get_bfs_path():
 
 
 def get_dijkstra_path():
-    return [1,2]
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    start_node = 0
+    target_node = global_game_data.target_node[global_game_data.current_graph_index]
+    end_node = len(graph)-1
+
+    path_to_target_node = dijkstra_path(start_node, target_node, graph)
+    if not path_to_target_node:
+        return []
+    path_to_end_node = dijkstra_path(target_node, end_node, graph)
+    if not path_to_end_node:
+        return []
+    final_path = path_to_target_node[:-1] + path_to_end_node
+    
+    assert final_path[0] == start_node, f"path's first node is the start node"
+    assert final_path[-1] == end_node, f"path's last node is the end node"
+
+    for i in range(len(final_path) - 1):
+        current_node = final_path[i]
+        next_node = final_path[i+1]
+        assert next_node in graph[current_node][1], f"Edge between {current_node} and {next_node} doesn't exist"
+    
+    return final_path
+
+
+
+def dijkstra_path(start_node, end_node, graph):
+    distances = {}
+    for node_index, node in enumerate(graph):
+        distances[node_index] = float('inf')
+    distances[start_node] = 0
+
+    priority_queue = [(0, start_node)]
+    parents = {start_node: None}
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        if current_node == end_node:
+            path = []
+            while current_node is not None:
+                path.append(current_node)
+                current_node = parents[current_node]
+            return path[::-1]
+        
+        for neighbor in graph[current_node][1]:
+            weight = 1
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                parents[neighbor] = current_node
+                heapq.heappush(priority_queue, (distance, neighbor))
+
+    return []
