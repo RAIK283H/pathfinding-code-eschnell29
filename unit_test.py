@@ -5,6 +5,7 @@ from permutation import is_ham_cycle
 from permutation import get_all_sjt_permutations
 from permutation import find_all_hamiltonian_cycles
 from pathing import dijkstra_path
+from f_w import floyd_warshall, construct_full_path
 
 class TestPathFinding(unittest.TestCase):
 
@@ -127,6 +128,76 @@ class TestPathFinding(unittest.TestCase):
         }
         result = dijkstra_path(0, 3, graph)
         self.assertEqual(result, [0, 1, 3], "Dijkstra should return the shortest path from 0 to 3")
+
     
+    def test_floyd_warshall_correctness(self):
+        graph = {
+            0: [(0, 0), [1, 2]],
+            1: [(1, 0), [0, 3]],
+            2: [(0, 1), [0, 3]],
+            3: [(1, 1), [1, 2]],
+        }
+        expected_distances = [
+            [0, 1, 1, 2],
+            [1, 0, 2, 1],
+            [1, 2, 0, 1],
+            [2, 1, 1, 0],
+        ]
+        distance, _ = floyd_warshall(graph)
+        self.assertEqual(distance, expected_distances, "should calculate correct shortest paths.")
+        
+    def test_construct_full_path(self):
+        graph = {
+            0: [(0, 0), [1, 2]],
+            1: [(1, 0), [0, 3]],
+            2: [(0, 1), [0, 3]],
+            3: [(1, 1), [1, 2]],
+        }
+        _, parents = floyd_warshall(graph)
+        path = construct_full_path(parents, 0, 3)
+        expected_path = [0, 1, 3]
+        self.assertEqual(path, expected_path, "should return the correct shortest path from 0 to 3.")
+
+    def test_floyd_warshall_disconnected_graph(self):
+        graph = {
+            0: [(0, 0), [1]],
+            1: [(1, 0), [0]],
+            2: [(0, 1), [3]],
+            3: [(1, 1), [2]],
+        }
+        distance, _ = floyd_warshall(graph)
+        self.assertEqual(distance[0][2], math.inf, "should show no path between disconnected nodes.")
+    
+    def test_single_node_graph(self):
+        self.single_node_graph = {
+            0: [(0, 0), []]
+        }
+
+        distances, parents = floyd_warshall(self.single_node_graph)
+        self.assertEqual(distances[0][0], 0, "Distance should be 0")
+        self.assertEqual(construct_full_path(parents, 0, 0), [], "Path should be []")
+
+
+    def test_path_with_no_direct_edges(self):
+        graph_no_edges = {
+            0: [(0, 0), [1]],
+            1: [(1, 0), [0]],
+        }
+        distances, parents = floyd_warshall(graph_no_edges)
+        self.assertEqual(distances[0][1], 1, "Distance from 0 to 1 should be 1")
+        self.assertEqual(construct_full_path(parents, 0, 1), [0, 1], "Path from 0 to 1 should be [0, 1]")
+
+    def test_multiple_paths_same_distance(self):
+        graph_same_distance = {
+            0: [(0, 0), [1, 2]],
+            1: [(1, 0), [0, 3]],
+            2: [(0, 1), [0, 3]],
+            3: [(1, 1), [1, 2]],
+        }
+        distances, parents = floyd_warshall(graph_same_distance)
+        self.assertEqual(distances[0][3], 2, "Shortest distance from 0 to 3 should be 2")
+        path = construct_full_path(parents, 0, 3)
+        self.assertIn(path, [[0, 1, 3], [0, 2, 3]], "Path should be one of [0, 1, 3] or [0, 2, 3]")
+
 if __name__ == '__main__':
     unittest.main()
